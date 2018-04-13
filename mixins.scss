@@ -1,0 +1,330 @@
+
+// for ::before and ::after
+@mixin pseudo($display: block, $pos: absolute, $content: ''){
+    content: $content;
+    display: $display;
+    position: $pos;
+}
+div::before {
+    @include pseudo;
+}
+
+// with %extend
+%pseudo {
+	content:'';
+	display:block;
+	position:absolute;
+}
+div::after {
+    %extend pseudo;
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+//clearfix
+
+@mixin clearfix() {
+	*zoom: 1;
+    &:before,
+    &:after {
+        content: "";
+        display: table;
+    }
+    &:after {
+        clear: both;
+    }
+}
+div {
+     @include clearfix();
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// Responsive ratio - for creating scalable elements (usually images / background images) that maintain a ratio.
+
+@mixin responsive-ratio($x,$y, $pseudo: false) {
+    $padding: unquote( ( $y / $x ) * 100 + '%' );
+    @if $pseudo {
+        &:before {
+            @include pseudo($pos: relative);
+            width: 100%;
+            padding-top: $padding;
+        }
+    } @else {
+        padding-top: $padding;
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// Placeholders 
+
+@mixin input-placeholder {
+    &.placeholder { @content; }
+    &:-moz-placeholder { @content; }
+    &::-moz-placeholder { @content; }
+    &:-ms-input-placeholder { @content; }
+    &::-webkit-input-placeholder { @content; }
+}
+
+input, textarea {  
+    @include input-placeholder {
+        color: $grey;
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+//CSS triangles
+//This mixin takes all the hassle out of creating that triangle you'll see coming out of most traditional tooltips, all without images, you just specify it's colour, how big you want it, the direction it's going to come out of your element and you're done!
+
+@mixin css-triangle($color, $direction, $size: 6px, $position: absolute, $round: false){
+    @include pseudo($pos: $position);
+    width: 0;
+    height: 0;
+    @if $round {
+        border-radius: 3px;
+    }
+    @if $direction == down {
+        border-left: $size solid transparent;
+        border-right: $size solid transparent;
+        border-top: $size solid $color;
+        margin-top: 0 - round( $size / 2.5 );
+    } @else if $direction == up {
+        border-left: $size solid transparent;
+        border-right: $size solid transparent;
+        border-bottom: $size solid $color;
+        margin-bottom: 0 - round( $size / 2.5 );
+    } @else if $direction == right {
+        border-top: $size solid transparent;
+        border-bottom: $size solid transparent;
+        border-left: $size solid $color;
+        margin-right: -$size;
+    } @else if  $direction == left {
+        border-top: $size solid transparent;
+        border-bottom: $size solid transparent;
+        border-right: $size solid $color;
+        margin-left: -$size;
+    }
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+//Opacity
+@mixin opacity($opacity) {
+  opacity: $opacity;
+  $opacity-ie: $opacity * 100;
+  filter: alpha(opacity=$opacity-ie); //IE8
+}
+div {
+  @include opacity(0.8);
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// Center-align a block level element
+// Quickly center any element within its parent. Requires width or max-width to be set.
+
+@mixin center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div {
+  width: 450px;
+  @include center-block;
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+//Set a rem font size with pixel fallback
+// Rem is similar to the em value, but instead of being relative to the parent element it’s relative to the font-size set in the <html>. There’s no support for rem units in IE8 and below. But with this mixin we can create a fallback to pixels when rem isn’t supported.
+
+html { font-size: 62.5%; } 
+body { font-size: 1.4rem; } /* =14px */
+h1   { font-size: 2.4rem; } /* =24px */
+
+@function calculateRem($size) {
+  $remSize: $size / 16px;
+  @return $remSize * 1rem;
+}
+
+@mixin font-size($size) {
+  font-size: $size;
+  font-size: calculateRem($size);
+}
+p {
+  @include font-size(14px)
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// Media queries breakpoints
+
+@mixin bp-large {
+  @media only screen and (max-width: 60em) {
+    @content;
+  }
+}
+
+@mixin bp-medium {
+  @media only screen and (max-width: 40em) {
+    @content;
+  }
+}
+
+@mixin bp-small {
+  @media only screen and (max-width: 30em) {
+    @content;
+  }
+}
+.sidebar {
+  width: 60%;
+  float: left;
+  margin: 0 2% 0 0;
+  @include bp-small {
+    width: 100%;
+    float: none;
+    margin: 0;
+  }
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// absolute centering 
+
+@mixin absolutecenter($axis: "both"){
+  position:absolute;
+  @if $axis == "y"{
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  @if $axis == "x"{
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  @if $axis == "both"{
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+  }
+}
+//-----------------------------------------------------------------------------------------------------------//
+
+//links
+
+@mixin linx ($link, $visit, $hover, $active) {
+  a {
+    color: $link;
+    &:visited {
+      color: $visit;
+    }
+    &:hover {
+      color: $hover;   
+    }
+    &:active {
+      color: $active;
+    }
+  }
+  @include linx(white, blue, green, red);
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// border-radius
+
+@mixin border-radius ( $value: 3px ) {
+  -webkit-border-radius: $value;
+  -moz-border-radius: $value;
+  border-radius: $value;
+
+  // keeps background from busting out of border 
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// box-shadows
+
+@mixin box-shadow($top, $left, $blur, $color, $inset: false) {
+  @if $inset {
+    -webkit-box-shadow:inset $top $left $blur $color;
+    -moz-box-shadow:inset $top $left $blur $color;
+    box-shadow:inset $top $left $blur $color;
+  } @else {
+    -webkit-box-shadow: $top $left $blur $color;
+    -moz-box-shadow: $top $left $blur $color;
+    box-shadow: $top $left $blur $color;
+  }
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// gradient
+
+
+@mixin gradient($from, $to) {
+  background: -webkit-gradient(linear, left top, left bottom, from($from), to($to));
+  background: -moz-linear-gradient(top,  $from, $to);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$from}', endColorstr='#{$to}');
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// button
+
+
+@mixin button-bg($bg) {
+  background: $bg;
+  &:hover {
+    background:darken($bg,8%);
+    transition: all 0.3s ease;
+  }
+  &:active {
+    background:darken($bg,25%);
+  } 
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// Truncate
+// Requires inline-block or block for proper styling
+@mixin text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+//-----------------------------------------------------------------------------------------------------------//
+
+// Transforms
+
+
+@mixin transform($arguments...) {
+    -webkit-transform: $arguments;
+      -ms-transform: $arguments; // IE9
+          transform: $arguments;
+}
+
+@mixin transform-origin($arguments...) {
+  -webkit-transform-origin: $arguments;
+      -ms-transform-origin: $arguments; // IE9
+          transform-origin: $arguments;
+}
+
+@mixin rotate($arguments...) {
+  -webkit-transform: rotate($arguments);
+      -ms-transform: rotate($arguments); // IE9
+          transform: rotate($arguments);
+}
+
+@mixin backface-visibility ($arguments) {
+  -webkit-backface-visibility: $arguments;
+     -moz-backface-visibility: $arguments;
+      -ms-backface-visibility: $arguments;
+       -o-backface-visibility: $arguments;
+          backface-visibility: $arguments;
+}
