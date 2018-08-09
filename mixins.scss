@@ -1,5 +1,4 @@
 
-// for ::before and ::after
 @mixin pseudo($display: block, $pos: absolute, $content: ''){
     content: $content;
     display: $display;
@@ -21,8 +20,6 @@ div::after {
 
 //-----------------------------------------------------------------------------------------------------------//
 
-//clearfix
-
 @mixin clearfix() {
 	*zoom: 1;
     &:before,
@@ -34,13 +31,11 @@ div::after {
         clear: both;
     }
 }
-div {
-     @include clearfix();
-}
+// div {
+//      @include clearfix();
+// }
 
 //-----------------------------------------------------------------------------------------------------------//
-
-// Responsive ratio - for creating scalable elements (usually images / background images) that maintain a ratio.
 
 @mixin responsive-ratio($x,$y, $pseudo: false) {
     $padding: unquote( ( $y / $x ) * 100 + '%' );
@@ -56,9 +51,17 @@ div {
 }
 
 //-----------------------------------------------------------------------------------------------------------//
+//absolute centering with flexbox
+@mixin flexbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+// div {
+//   @include flex();
+// }
 
-// Placeholders 
-
+//-----------------------------------------------------------------------------------------------------------//
 @mixin input-placeholder {
     &.placeholder { @content; }
     &:-moz-placeholder { @content; }
@@ -76,7 +79,6 @@ input, textarea {
 //-----------------------------------------------------------------------------------------------------------//
 
 //CSS triangles
-//This mixin takes all the hassle out of creating that triangle you'll see coming out of most traditional tooltips, all without images, you just specify it's colour, how big you want it, the direction it's going to come out of your element and you're done!
 
 @mixin css-triangle($color, $direction, $size: 6px, $position: absolute, $round: false){
     @include pseudo($pos: $position);
@@ -110,7 +112,6 @@ input, textarea {
 
 //-----------------------------------------------------------------------------------------------------------//
 
-//Opacity
 @mixin opacity($opacity) {
   opacity: $opacity;
   $opacity-ie: $opacity * 100;
@@ -123,7 +124,6 @@ div {
 //-----------------------------------------------------------------------------------------------------------//
 
 // Center-align a block level element
-// Quickly center any element within its parent. Requires width or max-width to be set.
 
 @mixin center-block {
   display: block;
@@ -139,11 +139,10 @@ div {
 //-----------------------------------------------------------------------------------------------------------//
 
 //Set a rem font size with pixel fallback
-// Rem is similar to the em value, but instead of being relative to the parent element it’s relative to the font-size set in the <html>. There’s no support for rem units in IE8 and below. But with this mixin we can create a fallback to pixels when rem isn’t supported.
 
-html { font-size: 62.5%; } 
-body { font-size: 1.4rem; } /* =14px */
-h1   { font-size: 2.4rem; } /* =24px */
+// html { font-size: 62.5%; } 
+// body { font-size: 1.4rem; } /* =14px */
+// h1   { font-size: 2.4rem; } /* =24px */
 
 @function calculateRem($size) {
   $remSize: $size / 16px;
